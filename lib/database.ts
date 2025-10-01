@@ -1,35 +1,37 @@
 import mongoose from "mongoose";
 
-const MONGODB_URI = process.env.MONGODB_URI ?? (() => {
-  throw new Error("Please define the MONGODB_URI environment variable inside .env.local");
-})();
+const MONGODB_URI = process.env.MONGODB_URI;
 
-let isConnected = false;
+if (!MONGODB_URI) {
+  throw new Error(
+    "Please define the MONGODB_URI environment variable inside .env.local"
+  );
+}
+
+let cached = (global as any)._mongoose;
+
+if (!cached) {
+  cached = (global as any)._mongoose = { conn: null, promise: null };
+}
 
 export async function connectToDatabase() {
-  // Prevent multiple connections in development
-  if (isConnected) {
+  if (cached.conn) {
     console.log("MongoDB is already connected.");
-    return;
+    return cached.conn;
   }
 
-  // Prevent connection attempts on the client side
-  if (typeof window !== 'undefined') {
-    console.log("Skipping database connection on client side");
-    return;
-  }
-
-  try {
+  if (!cached.promise) {
     const opts = {
       dbName: "edaptix",
       bufferCommands: false,
-    };
+      // useNewUrlParser etc are default in Mongoose 7+
+    } as any;
 
-    await mongoose.connect(MONGODB_URI!, opts);
-    isConnected = true;
-    console.log("MongoDB Connected.");
-  } catch (error) {
-    console.error("MongoDB connection error:", error);
-    throw error;
+    cached.promise = mongoose.connect(MONGODB_URI!, opts).then((mongoose) => {
+      console.log("MongoDB connected successfully.")
+      return mongoose;
+    });
   }
+  cached.conn = await cached.promise;
+  return cached.conn;
 }

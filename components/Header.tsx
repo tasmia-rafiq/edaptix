@@ -1,21 +1,21 @@
 import Link from "next/link";
 import { User2Icon } from "lucide-react";
-import { signOutSession } from "@/lib/auth-actions";
 import Image from "next/image";
-import { auth } from "@/auth";
+import { getCurrentUser } from "@/lib/session";
+import LogoutButton from "./LogoutBtn";
 
 const Header = async () => {
   let session = null;
-  
+
   try {
-    session = await auth();
+    session = await getCurrentUser();
   } catch (error) {
     console.error("Auth error in Header:", error);
     // Continue rendering without session if auth fails
   }
 
   return (
-    <header className="px-5 py-3 bg-white shadow-sm font-poppins">
+    <header className="px-5 py-3 bg-white shadow-md font-poppins">
       <nav className="flex justify-between items-center">
         <Link href="/">
           <Image src="/logo.png" alt="Logo" width={200} height={100} />
@@ -28,33 +28,32 @@ const Header = async () => {
               Home
             </Link>
           </div>
-          {session && session?.user ? (
+          {session && session?._id ? (
             <>
               <Link
                 href={"/dashboard"}
-                className="primary_btn !text-[16px] !bg-white !text-black-100 flex items-center gap-2"
+                className="!text-[16px] !bg-white !text-black-100 flex items-center gap-2"
               >
                 Dashboard
               </Link>
 
-              <form action={signOutSession}>
-                <button type="submit">Logout</button>
-              </form>
-
-              {/* <Link href={`/user/${session?.id}`}>
-                <UserAvatar id={session?.id} size="size-10" />
-              </Link> */}
-
-              {/* <ProfileDropdown
-                userAvatar={<UserAvatar id={session?.id} size="size-10" />}
-                session={session}
-              /> */}
+              <LogoutButton />
             </>
           ) : (
-            <Link href={'/signin'} className="flex items-center gap-2 primary_btn">
-              <User2Icon size={15} />
-              <span>Sign In</span>
-            </Link>
+            <>
+              <Link
+                href={"/signup"}
+                className="primary_btn"
+              >
+                <span>Sign Up</span>
+              </Link>
+              <Link
+                href={"/signin"}
+                className="primary_btn white_btn"
+              >
+                <span>Sign In</span>
+              </Link>
+            </>
           )}
         </div>
       </nav>
