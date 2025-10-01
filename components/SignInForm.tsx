@@ -41,6 +41,7 @@ export default function SignInForm(): JSX.Element {
       }
 
       router.push("/dashboard");
+      router.refresh();
     } catch (err) {
       console.error(err);
       setError("Something went wrong. Please try again.");

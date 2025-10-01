@@ -218,6 +218,7 @@ export default function SignUpForm(): JSX.Element {
       // success — server should set HttpOnly session cookie
       // navigate to dashboard
       router.push("/dashboard");
+      router.refresh();
     } catch (err) {
       console.error(err);
       setError("Something went wrong. Please try again.");
