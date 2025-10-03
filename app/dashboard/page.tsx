@@ -10,7 +10,7 @@ export default async function DashboardPage() {
   return (
     <>
       {session && session.role === "student" ? (
-        <StudentDashboard />
+        <StudentDashboard session={session} />
       ) : (
         <TeacherDashboard session={session} />
       )}

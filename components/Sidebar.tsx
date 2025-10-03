@@ -15,7 +15,7 @@ export default function Sidebar() {
 
   return (
     <div className="w-64 h-screen bg-[#15a083] text-white p-4">
-      <h1 className="text-2xl font-bold mb-8">Admin Panel</h1>
+      <h1 className="text-2xl font-bold mb-8">Student </h1>
       <nav className="flex flex-col space-y-4">
         {links.map((link) => (
           <Link
