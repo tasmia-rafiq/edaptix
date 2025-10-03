@@ -3,27 +3,33 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-export default function Sidebar() {
+export default function Sidebar({role}:{role:"teacher"|"student"}) {
   const pathname = usePathname();
-
-  const links = [
-    { name: "Dashboard", href: "/dashboard" },
-    { name: "Create Test", href: "/dashboard/create-test" },
-    { name: "Students", href: "/dashboard/students" },
-    { name: "Settings", href: "/dashboard/settings" },
+  const teacherLinks = [
+    { href: "/dashboard", label: "Dashboard" },
+    { href: "/dashboard/students", label: "Students" },
+    { href: "/dashboard/create-test", label: "Create Test" },
+    { href: "/dashboard/settings", label: "Settings" },
   ];
 
+  const studentLinks = [
+    { href: "/dashboard", label: "Dashboard" },
+    { href: "/dashboard/tests", label: "Tests" },
+    { href: "/dashboard/settings", label: "Settings" },
+  ];
+  const links = role === "teacher"?teacherLinks:studentLinks;
+
   return (
-    <div className="w-64 h-screen bg-[#15a083] text-white p-4">
-      <h1 className="text-2xl font-bold mb-8">Student </h1>
+    <div className="w-64 h-screen bg-[#15a083] text-white min-h-screen p-4">
+      
       <nav className="flex flex-col space-y-4">
         {links.map((link) => (
           <Link
-            key={link.name}
+            key={link.href}
             href={link.href}
             
           >
-            {link.name}
+            {link.label}
           </Link>
         ))}
       </nav>

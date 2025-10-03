@@ -7,11 +7,11 @@ export default function TeacherDashboard({ session }: { session: any }) {
   return (
     <div className="flex min-h-screen bg-gray-50">
       {/* Sidebar */}
-      <Sidebar />
+      <Sidebar role={session.role}/>
 
       {/* Main content */}
       <div className="flex-1 p-8">
-        <div>
+        <div> 
           <h1 className="text-3xl font-bold">Teacher Dashboard</h1>
           <p className="text-base text-slate-500 mt-2">
             Welcome back, {session?.name ?? "Teacher"}

@@ -4,8 +4,8 @@ import Sidebar from "@/components/Sidebar";
 
 const StudentDashboard = ({ session }: { session: any }) => {
   return (
-    <div className="flex min-h-screen bg-gray-50">
-      <Sidebar/>
+    <div className="flex h-screen bg-gray-50">
+      <Sidebar role={session.role}/>
 
       <div className="flex-1 p-8">
         <div>
