@@ -5,6 +5,7 @@ import Test from "@/models/Test";
 import Link from "next/link";
 import React from "react";
 import TakeTest from "@/components/TakeTest";
+import AllAvailableTests from "@/components/AvailableTests";
 
 export default async function TestPage({ params }: { params: { id: string } }) {
   const user = await getCurrentUser();
@@ -83,7 +84,7 @@ export default async function TestPage({ params }: { params: { id: string } }) {
             </div>
           ) : (
             // Student view: render take test
-            <TakeTest testId={test._id} testData={test} />
+            <AllAvailableTests/>
           )}
         </section>
       </div>

@@ -14,7 +14,7 @@ export default function Sidebar({role}:{role:"teacher"|"student"}) {
 
   const studentLinks = [
     { href: "/dashboard", label: "Dashboard" },
-    { href: "/dashboard/tests", label: "Tests" },
+    { href: "/dashboard/tests[id]", label: "Tests" },
     { href: "/dashboard/settings", label: "Settings" },
   ];
   const links = role === "teacher"?teacherLinks:studentLinks;
