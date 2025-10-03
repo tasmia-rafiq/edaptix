@@ -1,4 +1,3 @@
-// components/CreateTestForm.tsx
 "use client";
 
 import React, { useState } from "react";
@@ -172,10 +171,10 @@ export default function CreateTestForm() {
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           placeholder="Test title (e.g., Midterm - Algebra)"
-          className="flex-1 px-3 py-2 border rounded-md"
+          className="form_input"
           required
         />
-        <select value={visibility} onChange={(e) => setVisibility(e.target.value as any)} className="px-3 py-2 border rounded-md">
+        <select value={visibility} onChange={(e) => setVisibility(e.target.value as any)} className="px-3 py-2 border border-slate-300 rounded-md">
           <option value="private">Private</option>
           <option value="public">Public (students can see)</option>
         </select>
@@ -186,14 +185,14 @@ export default function CreateTestForm() {
           value={description}
           onChange={(e) => setDescription(e.target.value)}
           placeholder="Short description (optional)"
-          className="w-full px-3 py-2 border rounded-md"
+          className="form_input"
           rows={2}
         />
       </div>
 
       <div className="space-y-4">
         {questions.map((q, qi) => (
-          <div key={qi} className="p-4 border rounded-md">
+          <div key={qi} className="p-4 border border-slate-400 rounded-md">
             <div className="flex justify-between items-start mb-3">
               <div className="flex items-center gap-2">
                 <div className="text-sm font-medium">Question {qi + 1}</div>
@@ -218,7 +217,7 @@ export default function CreateTestForm() {
                 value={q.text}
                 onChange={(e) => updateQuestionText(qi, e.target.value)}
                 placeholder="Enter question text"
-                className="w-full px-3 py-2 border rounded-md"
+                className="form_input"
               />
             </div>
 
@@ -237,7 +236,7 @@ export default function CreateTestForm() {
                     value={opt.text}
                     onChange={(e) => updateOptionText(qi, oi, e.target.value)}
                     placeholder={`Option ${String.fromCharCode(65 + oi)}`}
-                    className="flex-1 px-3 py-2 border rounded-md"
+                    className="form_input"
                   />
                   <button type="button" onClick={() => removeOption(qi, oi)} className="p-1 text-red-600">
                     <Trash size={16} />
@@ -246,7 +245,7 @@ export default function CreateTestForm() {
               ))}
 
               <div className="mt-2 flex gap-2">
-                <button type="button" onClick={() => addOption(qi)} className="inline-flex items-center gap-2 px-3 py-1 border rounded text-sm">
+                <button type="button" onClick={() => addOption(qi)} className="inline-flex items-center gap-2 px-3 py-1 border border-slate-400 rounded text-sm">
                   <Plus size={14} /> Add option
                 </button>
               </div>
@@ -256,11 +255,11 @@ export default function CreateTestForm() {
       </div>
 
       <div className="flex gap-2">
-        <button type="button" onClick={addQuestion} className="inline-flex items-center gap-2 px-4 py-2 bg-slate-100 rounded-md">
+        <button type="button" onClick={addQuestion} className="inline-flex items-center gap-2 px-4 py-2 bg-slate-200 rounded-md">
           <Plus size={16} /> Add question
         </button>
 
-        <button type="submit" disabled={loading} className="ml-auto px-4 py-2 bg-sky-600 text-white rounded-md">
+        <button type="submit" disabled={loading} className="ml-auto px-4 py-2 bg-teal text-white rounded-md">
           {loading ? "Saving..." : "Save test"}
         </button>
       </div>

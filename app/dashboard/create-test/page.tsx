@@ -1,4 +1,3 @@
-// app/dashboard/create-test/page.tsx
 import CreateTestForm from "@/components/CreateTestForm";
 import { getCurrentUser } from "@/lib/session";
 import { redirect } from "next/navigation";
@@ -7,12 +6,10 @@ export default async function CreateTestPage() {
   const user = await getCurrentUser();
 
   if (!user) {
-    // not logged in
     redirect("/signin");
   }
 
   if ((user as any).role !== "teacher") {
-    // not a teacher
     redirect("/dashboard");
   }
 
@@ -24,7 +21,6 @@ export default async function CreateTestPage() {
           Build an assessment for your students. Add questions and multiple options. Mark the correct option for automatic grading later.
         </p>
 
-        {/* Client form */}
         <CreateTestForm />
       </div>
     </main>
