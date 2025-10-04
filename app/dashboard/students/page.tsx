@@ -15,6 +15,7 @@ const [students, setStudents] = useState<Student[]>([]);
 
   useEffect(() => {
     async function fetchStudents() {
+        // please check this 
       const res = await fetch("/api/users/students");
       const data = await res.json();
       setStudents(data);
