@@ -3,7 +3,7 @@
 
 import React, { useState } from "react";
 
-export default function TakeTest({ test }: { test: any }) {
+export default function TakeTest({ test, studentId }: { test: any;studentId: string }) {
   // test is plain object: { _id, title, questions: [{ text, options: [{text}], ...}], ... }
   const total = test.questions?.length ?? 0;
   const [answers, setAnswers] = useState<number[]>(Array(total).fill(-1));
