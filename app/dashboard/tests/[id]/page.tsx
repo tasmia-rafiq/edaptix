@@ -5,16 +5,19 @@ import Test from "@/models/Test";
 import Link from "next/link";
 import React from "react";
 import TakeTest from "@/components/TakeTest";
-import AllAvailableTests from "@/components/AvailableTests";
 
-export default async function TestPage({ params }: { params: { id: string } }) {
+// export default async function TestPage({ params }: { params: { id: string } }) {
+
+
+export default async function TestPage({ params }: { params: Promise<{id:string}> }) {
+  const {id} = await params;
   const user = await getCurrentUser();
   if (!user) redirect("/signin");
 
   await connectToDatabase();
 
   // find test by id
-  const test = await Test.findById(params.id).lean();
+  const test = await Test.findById(id).lean();
   if (!test) {
     return (
       <main className="min-h-screen p-8">
@@ -84,7 +87,12 @@ export default async function TestPage({ params }: { params: { id: string } }) {
             </div>
           ) : (
             // Student view: render take test
-            <AllAvailableTests/>
+            //  should take in test id
+            <TakeTest 
+                    test={JSON.parse(JSON.stringify(test))} 
+                    studentId={String(user._id)} 
+                  />
+
           )}
         </section>
       </div>
