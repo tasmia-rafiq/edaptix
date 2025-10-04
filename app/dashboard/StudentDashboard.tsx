@@ -17,7 +17,7 @@ const StudentDashboard = ({ session }: { session: any }) => {
 
 
       <h1 className="text-2xl font-bold mb-6">Available Tests</h1>
-      <AllAvailableTests />
+      <AllAvailableTests studentId={String(session._id)}/>
       </div>
     </div>
   );
