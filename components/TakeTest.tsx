@@ -1,100 +1,101 @@
+// components/TakeTest.tsx
 "use client";
 
 import React, { useState } from "react";
 
-interface Test {
-  _id: string;
-  title: string;
-  description?: string;
-  questions: {
-    text: string;
-    options: { text: string }[];
-    correctIndex?: number; // optional, hidden from students
-  }[];
-}
-
-export default function TakeTest({
-  test,
-  studentId,
-}: {
-  test: Test;
-  studentId: string;
-}) {
-  const [answers, setAnswers] = useState<number[]>(Array(test.questions.length).fill(-1));
-  const [submitted, setSubmitted] = useState(false);
+export default function TakeTest({ test }: { test: any }) {
+  // test is plain object: { _id, title, questions: [{ text, options: [{text}], ...}], ... }
+  const total = test.questions?.length ?? 0;
+  const [answers, setAnswers] = useState<number[]>(Array(total).fill(-1));
   const [loading, setLoading] = useState(false);
+  const [submittedResult, setSubmittedResult] = useState<null | { score: number; total: number; attempt: number; submissionId: string }>(null);
+  const [error, setError] = useState<string | null>(null);
 
-  const handleOptionSelect = (qIndex: number, optionIndex: number) => {
-    if (submitted) return;
-    const updated = [...answers];
-    updated[qIndex] = optionIndex;
-    setAnswers(updated);
+  const select = (qIndex: number, optIndex: number) => {
+    if (submittedResult) return; // disable after submit
+    const copy = [...answers];
+    copy[qIndex] = optIndex;
+    setAnswers(copy);
   };
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    setError(null);
+
+    // basic client validation: all questions answered
+    if (answers.some((a) => a === -1)) {
+      setError("Please answer all questions before submitting.");
+      return;
+    }
+
     setLoading(true);
     try {
-      const res = await fetch("/api/tests/submit", {
+      const res = await fetch("/api/submissions", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          testId: test._id,
-          studentId,
-          answers,
-        }),
+        body: JSON.stringify({ testId: test._id, answers }),
       });
 
-      if (!res.ok) throw new Error("Failed to submit");
-      setSubmitted(true);
+      const data = await res.json();
+      if (!res.ok) {
+        setError(data?.error || "Submission failed");
+        setLoading(false);
+        return;
+      }
+
+      setSubmittedResult({ score: data.score, total: data.total, attempt: data.attempt, submissionId: data.submissionId });
     } catch (err) {
-      console.error("Submission error:", err);
-      alert("Something went wrong submitting your test.");
+      console.error(err);
+      setError("Network error");
     } finally {
       setLoading(false);
     }
   };
 
-  return (
-    <div className="space-y-8">
-      <div>
-        <h1 className="text-2xl font-bold mb-2">{test.title}</h1>
-        {test.description && <p className="text-slate-600 mb-4">{test.description}</p>}
+  if (submittedResult) {
+    return (
+      <div className="text-center space-y-4">
+        <h2 className="text-2xl font-bold text-green-600">Test submitted</h2>
+        <p>
+          Score: <strong>{submittedResult.score}</strong> / {submittedResult.total}
+        </p>
+        <p>Attempt #{submittedResult.attempt}</p>
+        <p className="text-sm text-slate-500">Submission id: {submittedResult.submissionId}</p>
       </div>
+    );
+  }
 
-      {test.questions.map((q, qi) => (
-        <div key={qi} className="border rounded-lg p-4 bg-white shadow-sm">
-          <h3 className="font-medium mb-3">{qi + 1}. {q.text}</h3>
-          <div className="space-y-2">
-            {q.options.map((opt, oi) => (
-              <button
-                key={oi}
-                onClick={() => handleOptionSelect(qi, oi)}
-                disabled={submitted}
-                className={`w-full text-left px-4 py-2 border rounded-md transition
-                  ${answers[qi] === oi ? "border-sky-500 bg-sky-50" : "border-slate-300"}
-                  ${submitted ? "opacity-70 cursor-not-allowed" : "hover:border-sky-400"}
-                `}
-              >
-                {String.fromCharCode(65 + oi)}. {opt.text}
-              </button>
+  return (
+    <form onSubmit={(e) => handleSubmit(e)} className="space-y-6">
+      {test.questions.map((q: any, qi: number) => (
+        <div key={qi} className="border p-4 rounded-md bg-white">
+          <div className="mb-3 font-medium">
+            {qi + 1}. {q.text}
+          </div>
+          <div className="flex flex-col gap-2">
+            {q.options.map((opt: any, oi: number) => (
+              <label key={oi} className={`flex items-center gap-2 p-2 rounded-md cursor-pointer ${answers[qi] === oi ? "bg-sky-50 border border-sky-200" : "hover:bg-slate-50"}`}>
+                <input
+                  type="radio"
+                  name={`q-${qi}`}
+                  checked={answers[qi] === oi}
+                  onChange={() => select(qi, oi)}
+                  className="h-4 w-4"
+                />
+                <span>{String.fromCharCode(65 + oi)}. {opt.text}</span>
+              </label>
             ))}
           </div>
         </div>
       ))}
 
+      {error && <div className="text-red-600 text-sm">{error}</div>}
+
       <div className="flex justify-end">
-        {!submitted ? (
-          <button
-            onClick={handleSubmit}
-            disabled={loading}
-            className="px-6 py-2 bg-sky-600 text-white font-medium rounded-md hover:bg-sky-700 disabled:opacity-50"
-          >
-            {loading ? "Submitting..." : "Submit Test"}
-          </button>
-        ) : (
-          <p className="text-green-600 font-medium">✅ Test submitted successfully!</p>
-        )}
+        <button type="submit" disabled={loading} className="px-4 py-2 bg-teal text-white rounded-md disabled:opacity-50">
+          {loading ? "Submitting..." : "Submit Test"}
+        </button>
       </div>
-    </div>
+    </form>
   );
 }
