@@ -203,7 +203,7 @@ export default async function AttemptsPage({
 
         <div className="rounded-2xl bg-white p-6 border border-slate-100 shadow-sm">
           <div className="space-y-4">
-            {submissions.map((s: any) => {
+            {submissions.length > 0 ? submissions.map((s: any) => {
               const student = studentsMap[String(s.studentId)] ?? null;
               const percent = computePercentNumberFromSubmission(s);
               const barColor = getBarColor(percent);
@@ -286,7 +286,7 @@ export default async function AttemptsPage({
                   </div>
                 </div>
               );
-            })}
+            }) : <div className="text-center text-slate-500 py-12">No attempts found.</div>}
           </div>
 
           {/* pagination */}

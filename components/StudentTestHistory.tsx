@@ -2,6 +2,7 @@ import Link from "next/link";
 import { connectToDatabase } from "@/lib/database";
 import Submission from "@/models/Submission";
 import Test from "@/models/Test";
+import { Eye, RotateCcw } from "lucide-react";
 
 function formatDate(iso?: string | Date) {
   if (!iso) return "";
@@ -21,7 +22,6 @@ function computePercentNumber(s: any): number {
 
   return total > 0 ? Math.round((raw / total) * 100) : 0;
 }
-
 
 function getBarColorClass(percent: number) {
   if (percent >= 85) return "bg-emerald-500";
@@ -67,7 +67,8 @@ export default async function StudentTestHistory({
   const percentList = submissions.map((s: any) => computePercentNumber(s));
   const totalAttempts = submissions.length;
   const avgScore =
-    Math.round((percentList.reduce((a, b) => a + b, 0) / totalAttempts) * 10) / 10;
+    Math.round((percentList.reduce((a, b) => a + b, 0) / totalAttempts) * 10) /
+    10;
   const bestScore = Math.max(...percentList, 0);
 
   return (
@@ -77,7 +78,8 @@ export default async function StudentTestHistory({
           <div>
             <h3 className="text-lg font-semibold">Your test attempts</h3>
             <p className="text-sm text-slate-500 mt-1">
-              Recent tests you've taken — review results and retake where allowed.
+              Recent tests you've taken — review results and retake where
+              allowed.
             </p>
           </div>
 
@@ -110,7 +112,7 @@ export default async function StudentTestHistory({
             return (
               <article
                 key={s._id?.toString()}
-                className="flex items-center justify-between gap-4 p-4 rounded-lg border border-slate-200 hover:shadow-sm transition bg-slate-50"
+                className="flex items-center justify-between gap-8 p-4 rounded-lg border border-slate-200 hover:shadow-sm transition bg-slate-50"
               >
                 <div className="flex-1 min-w-0">
                   <div className="flex items-start justify-between gap-4">
@@ -147,7 +149,14 @@ export default async function StudentTestHistory({
                       </div>
 
                       <div className="mt-2 text-xs text-slate-400 flex items-center justify-between">
-                        <div>{s.total ? `${s.correctCount ?? Math.round((percent / 100) * (s.total || 0))} / ${s.total}` : ""}</div>
+                        <div>
+                          {s.total
+                            ? `${
+                                s.correctCount ??
+                                Math.round((percent / 100) * (s.total || 0))
+                              } / ${s.total}`
+                            : ""}
+                        </div>
                         <div>{percent}%</div>
                       </div>
                     </div>
@@ -157,16 +166,17 @@ export default async function StudentTestHistory({
                 <div className="flex-shrink-0 flex flex-col items-end gap-2">
                   <Link
                     href={`/dashboard/tests/${s.testId}/results/${s._id}`}
-                    className="text-sm px-3 py-1 rounded-md border border-slate-300 text-slate-700 hover:bg-slate-50"
+                    className="flex items-center justify-center gap-1 w-30 text-sm text-slate-700 bg-white border border-slate-300 rounded-md px-3 py-1.5 hover:bg-slate-100 transition"
+                    title="View Result"
                   >
-                    View result
+                    <Eye size={14} /> View result
                   </Link>
 
                   <Link
                     href={`/dashboard/tests/${s.testId}`}
-                    className="text-sm px-3 py-1 rounded-md bg-indigo text-white"
+                    className="flex items-center justify-center gap-1 w-30 text-sm text-white bg-indigo border border-indigo rounded-md px-3 py-1.5 transition"
                   >
-                    Retake
+                    <RotateCcw size={14} /> Retake
                   </Link>
                 </div>
               </article>
