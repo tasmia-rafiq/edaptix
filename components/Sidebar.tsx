@@ -20,7 +20,7 @@ export default function Sidebar({role}:{role:"teacher"|"student"}) {
   const links = role === "teacher"?teacherLinks:studentLinks;
 
   return (
-    <div className="w-64 h-screen bg-[#15a083] text-white min-h-screen p-4">
+    <div className="w-64 min-h-screen bg-gradient-to-tr from-indigo to-teal text-white p-4">
       
       <nav className="flex flex-col space-y-4">
         {links.map((link) => (

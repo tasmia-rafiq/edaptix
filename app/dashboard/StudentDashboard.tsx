@@ -1,11 +1,12 @@
 import React from "react";
 import AllAvailableTests from "@/components/AvailableTests";
 import Sidebar from "@/components/Sidebar";
+import StudentTestHistory from "@/components/StudentTestHistory";
 
 const StudentDashboard = ({ session }: { session: any }) => {
   return (
-    <div className="flex h-screen bg-gray-50">
-      <Sidebar role={session.role}/>
+    <div className="flex min-h-screen bg-gray-50">
+      <Sidebar role={session.role} />
 
       <div className="flex-1 p-8">
         <div>
@@ -15,9 +16,14 @@ const StudentDashboard = ({ session }: { session: any }) => {
           </p>
         </div>
 
+        <div className="my-8">
+          <h2 className="text-2xl font-bold mb-6">Available Tests</h2>
+          <AllAvailableTests studentId={String(session._id)} />
+        </div>
 
-      <h1 className="text-2xl font-bold mb-6">Available Tests</h1>
-      <AllAvailableTests studentId={String(session._id)}/>
+        <div>
+          <StudentTestHistory studentId={String(session._id)} />
+        </div>
       </div>
     </div>
   );

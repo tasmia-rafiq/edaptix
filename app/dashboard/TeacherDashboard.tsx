@@ -28,7 +28,7 @@ export default function TeacherDashboard({ session }: { session: any }) {
             </p>
           </div>
 
-          <AllTests teacherId={session._id} />
+          <AllTests teacherId={String(session._id)} />
         </section>
       </div>
     </div>

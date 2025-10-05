@@ -21,7 +21,7 @@ export default function CreateTestForm() {
   const [questions, setQuestions] = useState<Question[]>(() => [
     emptyQuestion(),
   ]);
-  const [visibility, setVisibility] = useState<"private" | "public">("private");
+  const [visibility, setVisibility] = useState<"private" | "public">("public");
 
   const [loading, setLoading] = useState(false); // for saving
   const [loadingInitial, setLoadingInitial] = useState(false); // for fetching test
