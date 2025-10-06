@@ -18,7 +18,6 @@ export default function TeacherDashboard({ session }: { session: any }) {
           </p>
         </div>
 
-        <StudentList />
 
         <section className="mt-10">
           <div className="flex items-center justify-between mb-6">

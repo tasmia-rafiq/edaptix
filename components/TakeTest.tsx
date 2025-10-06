@@ -1,15 +1,22 @@
-// components/TakeTest.tsx
 "use client";
 
 import React, { useState } from "react";
+import ReactMarkdown from "react-markdown";
 
-export default function TakeTest({ test, studentId }: { test: any;studentId: string }) {
-  // test is plain object: { _id, title, questions: [{ text, options: [{text}], ...}], ... }
+
+export default function TakeTest({ test, studentId }: { test: any; studentId: string }) {
   const total = test.questions?.length ?? 0;
   const [answers, setAnswers] = useState<number[]>(Array(total).fill(-1));
   const [loading, setLoading] = useState(false);
-  const [submittedResult, setSubmittedResult] = useState<null | { score: number; total: number; attempt: number; submissionId: string }>(null);
+  const [submittedResult, setSubmittedResult] = useState<null | {
+    score: number;
+    total: number;
+    attempt: number;
+    submissionId: string;
+    feedback?: string;
+  }>(null);
   const [error, setError] = useState<string | null>(null);
+  const [showFeedback, setShowFeedback] = useState(false);
 
   const select = (qIndex: number, optIndex: number) => {
     if (submittedResult) return; // disable after submit
@@ -22,7 +29,6 @@ export default function TakeTest({ test, studentId }: { test: any;studentId: str
     if (e) e.preventDefault();
     setError(null);
 
-    // basic client validation: all questions answered
     if (answers.some((a) => a === -1)) {
       setError("Please answer all questions before submitting.");
       return;
@@ -43,7 +49,13 @@ export default function TakeTest({ test, studentId }: { test: any;studentId: str
         return;
       }
 
-      setSubmittedResult({ score: data.score, total: data.total, attempt: data.attempt, submissionId: data.submissionId });
+      setSubmittedResult({
+        score: data.score,
+        total: data.total,
+        attempt: data.attempt,
+        submissionId: data.submissionId,
+        feedback: data.feedback,
+      });
     } catch (err) {
       console.error(err);
       setError("Network error");
@@ -54,19 +66,53 @@ export default function TakeTest({ test, studentId }: { test: any;studentId: str
 
   if (submittedResult) {
     return (
-      <div className="text-center space-y-4">
-        <h2 className="text-2xl font-bold text-green-600">Test submitted</h2>
-        <p>
-          Score: <strong>{submittedResult.score}</strong> / {submittedResult.total}
-        </p>
-        <p>Attempt #{submittedResult.attempt}</p>
-        <p className="text-sm text-slate-500">Submission id: {submittedResult.submissionId}</p>
+      <div className="space-y-6">
+        <div className="text-center space-y-4">
+          <h2 className="text-2xl font-bold text-green-600">Test submitted successfully</h2>
+          <p>
+            <strong>Score:</strong> {submittedResult.score} / {submittedResult.total}
+          </p>
+          <p>
+            <strong>Attempt:</strong> #{submittedResult.attempt}
+          </p>
+          <p className="text-sm text-slate-500">
+            <strong>Submission ID:</strong> {submittedResult.submissionId}
+          </p>
+        </div>
+
+        {submittedResult.feedback && (
+          <div className="border rounded-lg bg-gray-50 p-4 shadow-sm">
+            <button
+              onClick={() => setShowFeedback(!showFeedback)}
+              className="flex justify-between w-full text-left font-medium text-teal-700 hover:text-teal-900"
+            >
+              <span>📘 View Personalized AI Feedback</span>
+              <span>{showFeedback ? "▲" : "▼"}</span>
+            </button>
+
+            {showFeedback && (
+              <div className="mt-4 whitespace-pre-wrap text-gray-800 text-sm leading-relaxed">
+                <ReactMarkdown
+                components={{
+                  a: ({node, ...props}) =>(
+                    <a {...props}
+                    className="text-blue-600 underline hover:text-blue-800 transition-colors"
+                    target="_blank"
+                    rel="noopener noreferrer"/>
+                  ),
+                  }
+                }
+                >{submittedResult.feedback}</ReactMarkdown>
+              </div>
+            )}
+          </div>
+        )}
       </div>
     );
   }
 
   return (
-    <form onSubmit={(e) => handleSubmit(e)} className="space-y-6">
+    <form onSubmit={handleSubmit} className="space-y-6">
       {test.questions.map((q: any, qi: number) => (
         <div key={qi} className="border p-4 rounded-md bg-white">
           <div className="mb-3 font-medium">
@@ -74,7 +120,14 @@ export default function TakeTest({ test, studentId }: { test: any;studentId: str
           </div>
           <div className="flex flex-col gap-2">
             {q.options.map((opt: any, oi: number) => (
-              <label key={oi} className={`flex items-center gap-2 p-2 rounded-md cursor-pointer ${answers[qi] === oi ? "bg-sky-50 border border-sky-200" : "hover:bg-slate-50"}`}>
+              <label
+                key={oi}
+                className={`flex items-center gap-2 p-2 rounded-md cursor-pointer ${
+                  answers[qi] === oi
+                    ? "bg-sky-50 border border-sky-200"
+                    : "hover:bg-slate-50"
+                }`}
+              >
                 <input
                   type="radio"
                   name={`q-${qi}`}
@@ -82,7 +135,9 @@ export default function TakeTest({ test, studentId }: { test: any;studentId: str
                   onChange={() => select(qi, oi)}
                   className="h-4 w-4"
                 />
-                <span>{String.fromCharCode(65 + oi)}. {opt.text}</span>
+                <span>
+                  {String.fromCharCode(65 + oi)}. {opt.text}
+                </span>
               </label>
             ))}
           </div>
@@ -92,7 +147,11 @@ export default function TakeTest({ test, studentId }: { test: any;studentId: str
       {error && <div className="text-red-600 text-sm">{error}</div>}
 
       <div className="flex justify-end">
-        <button type="submit" disabled={loading} className="px-4 py-2 bg-teal text-white rounded-md disabled:opacity-50">
+        <button
+          type="submit"
+          disabled={loading}
+          className="px-4 py-2 bg-teal text-white rounded-md disabled:opacity-50"
+        >
           {loading ? "Submitting..." : "Submit Test"}
         </button>
       </div>
