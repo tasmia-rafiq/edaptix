@@ -8,6 +8,8 @@ export default function Sidebar({role}:{role:"teacher"|"student"}) {
   const teacherLinks = [
     { href: "/dashboard", label: "Dashboard" },
     { href: "/dashboard/students", label: "Students" },
+    { href: "/dashboard/courses/create", label: "Create Course" },
+    { href: "/dashboard/courses", label: "My Courses" },
     { href: "/dashboard/create-test", label: "Create Test" },
     { href: "/dashboard/settings", label: "Settings" },
   ];

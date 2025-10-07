@@ -30,6 +30,9 @@ const Header = async () => {
           </div>
           {session && session?._id ? (
             <>
+              {session?.role === "teacher" && (
+                <Link href={"/dashboard/courses"}>My Courses</Link>
+              )}
               <Link
                 href={"/dashboard"}
                 className="!text-[16px] !bg-white !text-black-100 flex items-center gap-2"

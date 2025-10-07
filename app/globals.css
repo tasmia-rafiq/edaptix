@@ -35,6 +35,10 @@ button {
     @apply !bg-white text-teal;
   }
 
+  .form_label {
+    @apply text-base font-medium text-slate-600 block my-2;
+  }
+
   /* SIGNUP FORM */
   label {
     @apply text-sm font-medium block mb-1;

@@ -1,5 +1,7 @@
 "use client";
 
+import { Eye, LayoutDashboard } from "lucide-react";
+import Link from "next/link";
 import React, { useState } from "react";
 import ReactMarkdown from "react-markdown";
 
@@ -104,9 +106,9 @@ export default function TakeTest({ test, studentId }: { test: any; studentId: st
           <p>
             <strong>Attempt:</strong> #{submittedResult.attempt}
           </p>
-          <p className="text-sm text-slate-500">
+          {/* <p className="text-sm text-slate-500">
             <strong>Submission ID:</strong> {submittedResult.submissionId}
-          </p>
+          </p> */}
         </div>
 
         {submittedResult.feedback && (
@@ -143,6 +145,12 @@ export default function TakeTest({ test, studentId }: { test: any; studentId: st
             )}
           </div>
         )}
+
+        <div className="flex justify-center gap-4">
+          <Link href={`/dashboard/tests/${test._id}/results/${submittedResult.submissionId}`} className="primary_btn flex items-center gap-2"><Eye /> View Result</Link>
+
+          <Link href={`/dashboard/tests/${test._id}/results/${submittedResult.submissionId}`} className="primary_btn flex items-center gap-2"><LayoutDashboard /> Go to Dashboard</Link>
+        </div>
       </div>
     );
   }
