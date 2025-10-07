@@ -6,6 +6,7 @@ import Test from "@/models/Test";
 import Submission from "@/models/Submission";
 import User from "@/models/User";
 import ReactMarkdown from "react-markdown";
+import FeedbackSection from "@/components/FeedbackSection";
 
 function formatDate(iso?: string | Date) {
   if (!iso) return "";
@@ -246,7 +247,7 @@ export default async function ResultPage({ params }: { params: Promise<{ id: str
           </section>
           {/* AI feedback from DB */}
 
-          {submission.feedback && (
+          {/* {submission.feedback && (
             <section className="mt-10 bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
               <h2 className="text-xl font-semibold text-indigo mb-3">Personalized Feedback</h2>
               <div className="prose prose-indigo max-w-none text-slate-800">
@@ -263,8 +264,13 @@ export default async function ResultPage({ params }: { params: Promise<{ id: str
                                 >{submission.feedback}</ReactMarkdown>
               </div>
             </section>
-          )}
+          )} */}
 
+
+<FeedbackSection
+  submissionId={String(submission._id)}
+  initialFeedback={submission.feedback}
+/>
 
         </div>
       </div>

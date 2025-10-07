@@ -8,6 +8,7 @@ export default function TakeTest({ test, studentId }: { test: any; studentId: st
   const total = test.questions?.length ?? 0;
   const [answers, setAnswers] = useState<number[]>(Array(total).fill(-1));
   const [loading, setLoading] = useState(false);
+  const [regenerating, setRegenerating] = useState(false);
   const [submittedResult, setSubmittedResult] = useState<null | {
     score: number;
     total: number;
@@ -64,6 +65,34 @@ export default function TakeTest({ test, studentId }: { test: any; studentId: st
     }
   };
 
+    const handleRegenerateFeedback = async () => {
+    if (!submittedResult) return;
+    if (!confirm("Regenerate AI feedback? This will replace the current one.")) return;
+
+    setRegenerating(true);
+    try {
+      const res = await fetch(
+        `/api/submissions/${submittedResult.submissionId}/regenerate-feedback`,
+        { method: "POST" }
+      );
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Failed to regenerate feedback");
+
+      setSubmittedResult({
+        ...submittedResult,
+        feedback: data.feedback,
+      });
+
+      alert("✅ Feedback regenerated successfully!");
+    } catch (err) {
+      console.error(err);
+      alert("❌ Could not regenerate feedback.");
+    } finally {
+      setRegenerating(false);
+    }
+  };
+
   if (submittedResult) {
     return (
       <div className="space-y-6">
@@ -89,6 +118,13 @@ export default function TakeTest({ test, studentId }: { test: any; studentId: st
               <span>📘 View Personalized AI Feedback</span>
               <span>{showFeedback ? "▲" : "▼"}</span>
             </button>
+             <button
+                onClick={handleRegenerateFeedback}
+                disabled={regenerating}
+                className="ml-4 px-3 py-1.5 bg-teal text-white rounded-md hover:bg-teal-700 disabled:opacity-50 text-sm"
+              >
+                {regenerating ? "Regenerating..." : "🔄 Regenerate"}
+              </button>
 
             {showFeedback && (
               <div className="mt-4 whitespace-pre-wrap text-gray-800 text-sm leading-relaxed">
