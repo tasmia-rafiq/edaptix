@@ -79,16 +79,6 @@ export async function POST(req: NextRequest) {
     });
     const attempt = prevCount + 1;
 
-    // 💾 Save submission
-    const saved = await Submission.create({
-      testId,
-      studentId: (user as any)._id,
-      answers,
-      score,
-      total,
-      attempt,
-    });
-
     let feedback = "";
     if (incorrectQuestions.length > 0) {
       try {
@@ -172,6 +162,18 @@ ${resourceParts.join("\n\n")}`;
         feedback = "Could not generate personalized feedback.";
       }
     }
+    
+    // 💾 Save submission
+    const saved = await Submission.create({
+      testId,
+      studentId: (user as any)._id,
+      answers,
+      score,
+      total,
+      attempt,
+      feedback
+    });
+
 
     return NextResponse.json(
       {

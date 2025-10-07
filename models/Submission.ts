@@ -1,4 +1,5 @@
 import mongoose, {Schema, Document} from "mongoose";
+import { type } from "os";
 import { number } from "zod";
 
 
@@ -9,6 +10,7 @@ export interface ISubmission extends Document{
     score : number;
     total: number;
     attempt: number;
+    feedback: string;
     createdAt: Date;
     updatedAt: Date;
 
@@ -22,6 +24,7 @@ const SubmissionSchema = new Schema<ISubmission>(
         score: { type: Number, required: true },
         total: { type: Number, required: true },
         attempt: { type: Number, default: 1 },
+        feedback:{type: String}
   },
   { timestamps: true }
     

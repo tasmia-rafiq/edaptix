@@ -5,6 +5,7 @@ import { connectToDatabase } from "@/lib/database";
 import Test from "@/models/Test";
 import Submission from "@/models/Submission";
 import User from "@/models/User";
+import ReactMarkdown from "react-markdown";
 
 function formatDate(iso?: string | Date) {
   if (!iso) return "";
@@ -166,7 +167,7 @@ export default async function ResultPage({ params }: { params: Promise<{ id: str
                 <div className="mt-3 flex gap-2">
                   <Link href={`/dashboard/tests/${test._id}`} className="px-3 py-1.5 rounded-md border border-slate-300 text-slate-700 hover:bg-slate-50">Retake</Link>
                   <Link href="/dashboard" className="px-3 py-1.5 rounded-md bg-teal text-white">Back</Link>
-              </div>
+                </div>
               )}
             </div>
           </div>
@@ -202,8 +203,8 @@ export default async function ResultPage({ params }: { params: Promise<{ id: str
                         }
 
                         const label = isCorrect
-                            ? "Correct"
-                            : isSelected
+                          ? "Correct"
+                          : isSelected
                             ? isStudentOwner
                               ? "Your answer"
                               : "Selected"
@@ -216,10 +217,10 @@ export default async function ResultPage({ params }: { params: Promise<{ id: str
 
                             <div className="ml-auto text-xs">
                               {label ? (
-                                  <span className={`inline-flex items-center gap-1 ${isCorrect ? "text-emerald-700" : "text-rose-700"}`}>
-                                    {isCorrect ? "✓ Correct" : (isStudentOwner ? "✕ Your answer" : "● Selected")}
-                                  </span>
-                                ) : null}
+                                <span className={`inline-flex items-center gap-1 ${isCorrect ? "text-emerald-700" : "text-rose-700"}`}>
+                                  {isCorrect ? "✓ Correct" : (isStudentOwner ? "✕ Your answer" : "● Selected")}
+                                </span>
+                              ) : null}
                             </div>
                           </div>
                         );
@@ -243,6 +244,28 @@ export default async function ResultPage({ params }: { params: Promise<{ id: str
               </article>
             ))}
           </section>
+          {/* AI feedback from DB */}
+
+          {submission.feedback && (
+            <section className="mt-10 bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
+              <h2 className="text-xl font-semibold text-indigo mb-3">Personalized Feedback</h2>
+              <div className="prose prose-indigo max-w-none text-slate-800">
+                 <ReactMarkdown
+                                components={{
+                                  a: ({node, ...props}) =>(
+                                    <a {...props}
+                                    className="text-blue-600 underline hover:text-blue-800 transition-colors"
+                                    target="_blank"
+                                    rel="noopener noreferrer"/>
+                                  ),
+                                  }
+                                }
+                                >{submission.feedback}</ReactMarkdown>
+              </div>
+            </section>
+          )}
+
+
         </div>
       </div>
     </main>
