@@ -105,10 +105,10 @@ export default async function TeacherCoursesPage() {
           </div>
 
           <div className="flex items-center gap-3">
-            <Link href="/dashboard/create-course" className="inline-flex items-center gap-2 px-4 py-2 rounded-md bg-gradient-to-tr from-indigo to-teal text-white">
+            <Link href="/dashboard/courses/create" className="inline-flex items-center gap-2 px-4 py-2 rounded-md bg-gradient-to-tr from-indigo to-teal text-white">
               <Plus size={16} /> New course
             </Link>
-            <Link href="/dashboard" className="px-3 py-2 rounded-md border">Back</Link>
+            <Link href="/dashboard" className="primary_btn white_btn">Back</Link>
           </div>
         </div>
 

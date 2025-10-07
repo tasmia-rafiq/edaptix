@@ -369,20 +369,21 @@ export default function CreateCourseForm({
         </div>
       )}
 
+      {/* publish toggle */}
+      <div className="flex items-center justify-end gap-2">
+        <input
+          id="published"
+          type="checkbox"
+          checked={published}
+          onChange={() => setPublished((s) => !s)}
+        />
+        <label htmlFor="published" className="text-sm text-slate-600 mt-1">
+          Publish now (make course public)
+        </label>
+      </div>
+
       {/* Top row: title + cover */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
-        {/* publish toggle */}
-        <div className="flex items-center gap-2">
-          <input
-            id="published"
-            type="checkbox"
-            checked={published}
-            onChange={() => setPublished((s) => !s)}
-          />
-          <label htmlFor="published" className="text-sm text-slate-600">
-            Publish now (make course public)
-          </label>
-        </div>
         <div className="lg:col-span-2 space-y-3">
           <label className="form_label">Course title</label>
           <input
