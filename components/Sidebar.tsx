@@ -12,6 +12,7 @@ export default function Sidebar({role}:{role:"teacher"|"student"}) {
     { href: "/dashboard/courses", label: "My Courses" },
     { href: "/dashboard/create-test", label: "Create Test" },
     { href: "/dashboard/settings", label: "Settings" },
+    { href: "/dashboard/analytics", label: "Analytics" }
   ];
 
   const studentLinks = [
