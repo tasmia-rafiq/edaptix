@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import ReactMarkdown from "react-markdown";
 import { Mic, Send, BotMessageSquare } from "lucide-react";
 
 export default function AiTutorPage() {
@@ -42,7 +43,21 @@ export default function AiTutorPage() {
       <div className="border rounded-lg p-4 bg-white min-h-[400px] space-y-3 overflow-y-auto">
         {messages.map((msg, i) => (
           <div key={i} className={`p-3 rounded-md ${msg.role === "user" ? "bg-teal-50 text-right" : "bg-slate-50 text-left"}`}>
-            {msg.text}
+            <ReactMarkdown
+                        components={{
+                          a: ({ node, ...props }) => (
+                            <a
+                              {...props}
+                              className="text-blue-600 underline hover:text-blue-800 transition-colors"
+                              target="_blank"
+                              rel="noopener noreferrer"
+                            />
+                          ),
+                        }}
+                      >
+{msg.text}
+                      </ReactMarkdown>
+            
           </div>
         ))}
       </div>
