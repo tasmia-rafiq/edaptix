@@ -1,11 +1,10 @@
 "use client";
 
-import React, { useState, useRef, useCallback } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import {
   Plus,
   Trash,
-  ImageIcon,
   Video,
   ChevronDown,
   ChevronUp,
@@ -30,8 +29,10 @@ type LessonDraft = {
 
 export default function CreateCourseForm({
   teacherTests,
+  course,
 }: {
   teacherTests: { id: string; title: string }[];
+  course?: any | null;
 }) {
   const router = useRouter();
   // file limits (client-side)
@@ -80,6 +81,42 @@ export default function CreateCourseForm({
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<string[]>([]);
   const fileInputRefs = useRef<Record<string, HTMLInputElement | null>>({});
+
+  // --- Initialize from course prop if present (edit mode) ---
+  useEffect(() => {
+    if (!course) return;
+    // populate fields from server-provided plainCourse
+    setPublished(Boolean(course.published));
+    setTitle(course.title ?? "");
+    setSubtitle(course.subtitle ?? "");
+    setDescription(course.description ?? "");
+    setCategory(course.category ?? "");
+    setLevel((course.level as any) ?? "Beginner");
+    setLanguage(course.language ?? "English");
+    setTags(Array.isArray(course.tags) ? course.tags : []);
+    setIsPaid(Boolean(course.price && Number(course.price) > 0));
+    setPrice(course.price ?? "");
+    setEstimatedDuration(course.estimatedDuration ?? "");
+    setCoverImage(course.coverImage ?? null);
+
+    // lessons: ensure each lesson has an id (client stable id), collapsed false
+    const mappedLessons: LessonDraft[] = (course.lessons || []).map((l: any, idx: number) => ({
+      id: l.id ?? (`${String(course.id)}-l${idx}`),
+      title: l.title ?? "",
+      type: l.type ?? "video",
+      content: l.content ?? "",
+      testId: l.testId ? String(l.testId) : null,
+      summary: l.summary ?? "",
+      durationMinutes: l.durationMinutes ?? null,
+      uploading: false,
+      uploadProgress: 0,
+      collapsed: false,
+    }));
+
+    if (mappedLessons.length > 0) {
+      setLessons(mappedLessons);
+    }
+  }, [course]);
 
   // --- helper: signature + upload (signed) ---
   async function uploadFileToCloudinarySigned(
@@ -198,6 +235,8 @@ export default function CreateCourseForm({
     setTags((s) => s.filter((_, i) => i !== idx));
   }
 
+  
+
   // --- uploads ---
   async function handleCoverPick(file?: File) {
     setErrors([]);
@@ -258,7 +297,7 @@ export default function CreateCourseForm({
     }
   }
 
-  // --- submit ---
+  // --- submit - create and update ---
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setErrors([]);
@@ -309,19 +348,28 @@ export default function CreateCourseForm({
         published,
       };
 
-      const res = await fetch("/api/courses", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-        credentials: "same-origin",
-      });
-      const data = await res.json();
-      if (!res.ok) {
-        setErrors([data?.error || "Failed to create course."]);
-        setLoading(false);
-        return;
+      // If course exists -> update (PUT), otherwise create (POST)
+      if (course && course.id) {
+        const res = await fetch(`/api/courses/${course.id}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+          credentials: "same-origin",
+        });
+        const data = await res.json();
+        if (!res.ok) { setErrors([data?.error || "Failed to update course."]); setLoading(false); return; }
+        router.push(`/dashboard/courses/${data.id}`);
+      } else {
+        const res = await fetch("/api/courses", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+          credentials: "same-origin",
+        });
+        const data = await res.json();
+        if (!res.ok) { setErrors([data?.error || "Failed to create course."]); setLoading(false); return; }
+        router.push(`/dashboard/courses/${data.id}`);
       }
-      router.push(`/dashboard/courses/${data.id}`);
     } catch (err) {
       console.error(err);
       setErrors(["Something went wrong. Please try again."]);
@@ -420,7 +468,7 @@ export default function CreateCourseForm({
               const f = e.dataTransfer?.files?.[0];
               if (f) handleCoverPick(f);
             }}
-            className="w-56 h-36 rounded-lg border border-dashed border-slate-200 flex items-center justify-center bg-slate-50 cursor-pointer"
+            className="w-56 h-36 rounded-lg border border-dashed border-slate-300 flex items-center justify-center object-contain bg-slate-50 cursor-pointer overflow-hidden"
             onClick={() => coverInputRef.current?.click()}
             title="Click or drop an image"
           >
@@ -430,7 +478,7 @@ export default function CreateCourseForm({
                 <img
                   src={coverImage}
                   alt="cover"
-                  className="w-full h-full object-cover rounded-lg"
+                  className="w-full h-full !object-contain rounded-lg"
                 />
               ) : (
                 <>
@@ -881,7 +929,7 @@ export default function CreateCourseForm({
           disabled={loading}
           className="px-6 py-2 rounded-md bg-gradient-to-tr from-indigo to-teal-900 text-white"
         >
-          {loading ? "Saving…" : "Create course"}
+          {loading ? "Saving…" : (course ? "Update Course" : "Create Course")}
         </button>
       </div>
     </form>

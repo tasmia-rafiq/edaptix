@@ -1,4 +1,3 @@
-// app/courses/page.tsx
 import React from "react";
 import Link from "next/link";
 import { connectToDatabase } from "@/lib/database";
@@ -24,12 +23,13 @@ function formatDate(iso?: string | Date) {
 export default async function CoursesPage({
   searchParams,
 }: {
-  searchParams?: { q?: string; page?: string };
+  searchParams?: Promise<object>;
 }) {
   // simple search + pagination on server
-  const q = (searchParams?.q ?? "").trim();
-  const page = Math.max(1, Number(searchParams?.page ?? 1));
-  const limit = 12;
+  const sp = (await searchParams) as { [key: string]: any } ?? {};
+  const q = (sp?.q ?? "").toString().trim();
+  const page = Math.max(1, Number(sp?.page ?? 1));
+  const limit = 10;
   const skip = (page - 1) * limit;
 
   await connectToDatabase();
@@ -74,7 +74,7 @@ export default async function CoursesPage({
           <form method="GET" className="flex items-center gap-2">
             <input
               name="q"
-              defaultValue={searchParams?.q ?? ""}
+              defaultValue={sp?.q ?? ""}
               placeholder="Search courses, keywords..."
               className="form_input !w-64"
               aria-label="Search courses"
