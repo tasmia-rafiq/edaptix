@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import ReactMarkdown from "react-markdown";
+import { Eye, RotateCcw } from "lucide-react";
+
 
 export default function FeedbackSection({
   submissionId,
@@ -43,9 +45,10 @@ export default function FeedbackSection({
         <button
           onClick={handleRegenerate}
           disabled={loading}
-          className="px-3 py-1.5 bg-teal text-white rounded-md hover:bg-teal-700 disabled:opacity-50 text-sm"
+          className="px-3 py-1.5 bg-indigo text-white rounded-md hover:bg-gray-700 disabled:opacity-50 text-sm"
         >
-          {loading ? "Regenerating..." : "🔄 Regenerate Feedback"}
+                               
+          {loading ? ("Regenerating...") :(< span className="inline-flex items-center gap-1"> <RotateCcw size={14}/> Regenerate Feedback</span>)}
         </button>
       </div>
 
