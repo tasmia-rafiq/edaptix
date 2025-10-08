@@ -14,7 +14,7 @@ export async function POST(
     const user = await getCurrentUser();
     if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-    const { submissionId } = params;
+    const { submissionId } = await params;
     const submission = await Submission.findById(submissionId);
     if (!submission)
       return NextResponse.json({ error: "Submission not found" }, { status: 404 });
