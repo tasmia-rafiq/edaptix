@@ -1,10 +1,9 @@
 "use client";
 
-import { Eye, LayoutDashboard } from "lucide-react";
+import { Eye, LayoutDashboard, RotateCcw,BotMessageSquare } from "lucide-react";
 import Link from "next/link";
 import React, { useState } from "react";
 import ReactMarkdown from "react-markdown";
-
 
 export default function TakeTest({ test, studentId }: { test: any; studentId: string }) {
   const total = test.questions?.length ?? 0;
@@ -99,7 +98,7 @@ export default function TakeTest({ test, studentId }: { test: any; studentId: st
     return (
       <div className="space-y-6">
         <div className="text-center space-y-4">
-          <h2 className="text-2xl font-bold text-green-600">Test submitted successfully</h2>
+          <h2 className="text-2xl font-bold text-teal-700">Test submitted successfully</h2>
           <p>
             <strong>Score:</strong> {submittedResult.score} / {submittedResult.total}
           </p>
@@ -117,15 +116,17 @@ export default function TakeTest({ test, studentId }: { test: any; studentId: st
               onClick={() => setShowFeedback(!showFeedback)}
               className="flex justify-between w-full text-left font-medium text-teal-700 hover:text-teal-900"
             >
-              <span>📘 View Personalized AI Feedback</span>
+              <span className="flex items-center gap-2 text-teal-700 font-medium py-5"><BotMessageSquare className="text-teal-700" /> View Personalized AI Feedback</span>
               <span>{showFeedback ? "▲" : "▼"}</span>
             </button>
              <button
                 onClick={handleRegenerateFeedback}
                 disabled={regenerating}
-                className="ml-4 px-3 py-1.5 bg-teal text-white rounded-md hover:bg-teal-700 disabled:opacity-50 text-sm"
+                className=" primary_btn ml-4 px-3 py-1.5 bg-teal text-white rounded-md text-sm"
               >
-                {regenerating ? "Regenerating..." : "🔄 Regenerate"}
+                {regenerating ? ("Regenerating...") :(< span className="inline-flex items-center gap-3"> <RotateCcw size={18}/> Regenerate Feedback</span>)}
+
+                
               </button>
 
             {showFeedback && (
