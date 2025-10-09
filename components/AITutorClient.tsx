@@ -4,24 +4,31 @@ import { useState, useRef } from "react";
 import ReactMarkdown from "react-markdown";
 import { Send, BotMessageSquare, VolumeX, Volume2, Mic, MicOff } from "lucide-react";
 
+// 👇 Add global types so TS doesn't complain
+declare global {
+  interface Window {
+    webkitSpeechRecognition: any;
+    SpeechRecognition: any;
+  }
+}
+
 export default function AiTutorClient() {
   const [messages, setMessages] = useState<{ role: string; text: string }[]>([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [voiceEnabled, setVoiceEnabled] = useState(false);
   const [listening, setListening] = useState(false);
+  const recognitionRef = useRef<any>(null);
 
-  const recognitionRef = useRef<SpeechRecognition | null>(null);
-
-  // 🎤 Initialize speech recognition
+  // 🎤 Start listening
   const startListening = () => {
-    if (!("webkitSpeechRecognition" in window)) {
-      alert("Speech recognition is not supported in this browser.");
+    if (!("webkitSpeechRecognition" in window || "SpeechRecognition" in window)) {
+      alert("Speech recognition is not supported in this browser. Try Google Chrome.");
       return;
     }
 
     const SpeechRecognition =
-      window.SpeechRecognition || (window as any).webkitSpeechRecognition;
+      window.SpeechRecognition || window.webkitSpeechRecognition;
     const recognition = new SpeechRecognition();
     recognition.lang = "en-US";
     recognition.interimResults = false;
@@ -29,9 +36,12 @@ export default function AiTutorClient() {
 
     recognition.onstart = () => setListening(true);
     recognition.onend = () => setListening(false);
-    recognition.onerror = () => setListening(false);
+    recognition.onerror = (event: any) => {
+      console.error("Speech recognition error:", event.error);
+      setListening(false);
+    };
 
-    recognition.onresult = (event: SpeechRecognitionEvent) => {
+    recognition.onresult = (event: any) => {
       const transcript = event.results[0][0].transcript;
       setInput(transcript);
     };
@@ -57,7 +67,6 @@ export default function AiTutorClient() {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ message: input }),
-      credentials: "include",
     });
 
     const data = await res.json();
@@ -91,31 +100,6 @@ export default function AiTutorClient() {
           <BotMessageSquare className="text-teal-700" /> AI Study Assistant
         </h1>
 
-        <div className="flex items-center gap-2">
-          <button
-            onClick={toggleVoice}
-            className={`p-2 rounded-full border transition ${
-              voiceEnabled
-                ? "bg-teal-600 text-white hover:bg-teal-700"
-                : "bg-gray-200 text-gray-700 hover:bg-gray-300"
-            }`}
-            title={voiceEnabled ? "Disable Voice Output" : "Enable Voice Output"}
-          >
-            {voiceEnabled ? <Volume2 size={18} /> : <VolumeX size={18} />}
-          </button>
-
-          <button
-            onClick={listening ? stopListening : startListening}
-            className={`p-2 rounded-full border transition ${
-              listening
-                ? "bg-red-600 text-white hover:bg-red-700"
-                : "bg-gray-200 text-gray-700 hover:bg-gray-300"
-            }`}
-            title={listening ? "Stop Recording" : "Start Voice Input"}
-          >
-            {listening ? <MicOff size={18} /> : <Mic size={18} />}
-          </button>
-        </div>
       </div>
 
       <div className="border rounded-lg p-4 bg-white min-h-[400px] space-y-3 overflow-y-auto">
@@ -141,6 +125,32 @@ export default function AiTutorClient() {
           placeholder="Ask me anything..."
           className="flex-1 border rounded-md px-4 py-2"
         />
+        
+          <button
+            onClick={toggleVoice}
+            className={`p-2 rounded-full border transition ${
+              voiceEnabled
+                ? "bg-teal-600 text-white hover:bg-teal-700"
+                : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+            }`}
+            title={voiceEnabled ? "Disable Voice Output" : "Enable Voice Output"}
+          >
+            {voiceEnabled ? <Volume2 size={18} /> : <VolumeX size={18} />}
+          </button>
+
+
+
+          <button
+            onClick={listening ? stopListening : startListening}
+            className={`p-2 rounded-full border transition ${
+              listening
+                ? "bg-red-600 text-white hover:bg-red-700"
+                : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+            }`}
+            title={listening ? "Stop Recording" : "Start Voice Input"}
+          >
+            {listening ? <MicOff size={18} /> : <Mic size={18} />}
+          </button>
         <button
           onClick={handleSend}
           className="bg-teal-600 hover:bg-teal-700 text-white rounded-md px-4 py-2"
