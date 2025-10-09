@@ -1,14 +1,49 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import ReactMarkdown from "react-markdown";
-import { Send, BotMessageSquare, VolumeX, Volume2 } from "lucide-react";
+import { Send, BotMessageSquare, VolumeX, Volume2, Mic, MicOff } from "lucide-react";
 
 export default function AiTutorClient() {
   const [messages, setMessages] = useState<{ role: string; text: string }[]>([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [voiceEnabled, setVoiceEnabled] = useState(false);
+  const [listening, setListening] = useState(false);
+
+  const recognitionRef = useRef<SpeechRecognition | null>(null);
+
+  // 🎤 Initialize speech recognition
+  const startListening = () => {
+    if (!("webkitSpeechRecognition" in window)) {
+      alert("Speech recognition is not supported in this browser.");
+      return;
+    }
+
+    const SpeechRecognition =
+      window.SpeechRecognition || (window as any).webkitSpeechRecognition;
+    const recognition = new SpeechRecognition();
+    recognition.lang = "en-US";
+    recognition.interimResults = false;
+    recognition.continuous = false;
+
+    recognition.onstart = () => setListening(true);
+    recognition.onend = () => setListening(false);
+    recognition.onerror = () => setListening(false);
+
+    recognition.onresult = (event: SpeechRecognitionEvent) => {
+      const transcript = event.results[0][0].transcript;
+      setInput(transcript);
+    };
+
+    recognition.start();
+    recognitionRef.current = recognition;
+  };
+
+  const stopListening = () => {
+    recognitionRef.current?.stop();
+    setListening(false);
+  };
 
   const handleSend = async () => {
     if (!input.trim()) return;
@@ -36,38 +71,52 @@ export default function AiTutorClient() {
 
   const speakText = (text: string) => {
     const utter = new SpeechSynthesisUtterance(text);
-     utter.rate = 1;
+    utter.rate = 1;
     utter.pitch = 1;
     utter.volume = 1;
     window.speechSynthesis.speak(utter);
-    
   };
 
-  const toggleVoice  = () =>{
-    setVoiceEnabled((prev)=>{
+  const toggleVoice = () => {
+    setVoiceEnabled((prev) => {
       if (prev) window.speechSynthesis.cancel();
       return !prev;
     });
   };
 
-
   return (
     <div className="max-w-3xl mx-auto py-8 px-4 space-y-6">
-      <div className="flex justify-between items-center">      
+      <div className="flex justify-between items-center">
         <h1 className="text-3xl font-bold text-gray-800 flex items-center gap-2">
-        <BotMessageSquare className="text-teal-700" /> AI Study Assistant
-      </h1>
+          <BotMessageSquare className="text-teal-700" /> AI Study Assistant
+        </h1>
 
-      <button onClick={toggleVoice} className={`p-2 rounded full border transition ${voiceEnabled?
-        "bg-teal-600 text-white hover:bg-teal-700"
-        :"bg-teal-600 text-white hover:bg-teal-700"
-      }`} title={voiceEnabled?"Disable Voice":"Enable Voice"}>
-        {voiceEnabled?<Volume2 size={20}/>:<VolumeX size={20}/>}
+        <div className="flex items-center gap-2">
+          <button
+            onClick={toggleVoice}
+            className={`p-2 rounded-full border transition ${
+              voiceEnabled
+                ? "bg-teal-600 text-white hover:bg-teal-700"
+                : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+            }`}
+            title={voiceEnabled ? "Disable Voice Output" : "Enable Voice Output"}
+          >
+            {voiceEnabled ? <Volume2 size={18} /> : <VolumeX size={18} />}
+          </button>
 
-
-      </button>
-</div>
-
+          <button
+            onClick={listening ? stopListening : startListening}
+            className={`p-2 rounded-full border transition ${
+              listening
+                ? "bg-red-600 text-white hover:bg-red-700"
+                : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+            }`}
+            title={listening ? "Stop Recording" : "Start Voice Input"}
+          >
+            {listening ? <MicOff size={18} /> : <Mic size={18} />}
+          </button>
+        </div>
+      </div>
 
       <div className="border rounded-lg p-4 bg-white min-h-[400px] space-y-3 overflow-y-auto">
         {messages.map((msg, i) => (
@@ -82,7 +131,6 @@ export default function AiTutorClient() {
             <ReactMarkdown>{msg.text}</ReactMarkdown>
           </div>
         ))}
-
         {loading && <p className="text-gray-500 italic">Thinking...</p>}
       </div>
 
