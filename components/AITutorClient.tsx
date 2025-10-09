@@ -2,12 +2,13 @@
 
 import { useState } from "react";
 import ReactMarkdown from "react-markdown";
-import { Send, BotMessageSquare } from "lucide-react";
+import { Send, BotMessageSquare, VolumeX, Volume2 } from "lucide-react";
 
 export default function AiTutorClient() {
   const [messages, setMessages] = useState<{ role: string; text: string }[]>([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
+  const [voiceEnabled, setVoiceEnabled] = useState(false);
 
   const handleSend = async () => {
     if (!input.trim()) return;
@@ -29,20 +30,44 @@ export default function AiTutorClient() {
 
     if (data.reply) {
       setMessages((m) => [...m, { role: "assistant", text: data.reply }]);
-    //   speakText(data.reply);
+      if (voiceEnabled) speakText(data.reply);
     }
   };
 
   const speakText = (text: string) => {
     const utter = new SpeechSynthesisUtterance(text);
+     utter.rate = 1;
+    utter.pitch = 1;
+    utter.volume = 1;
     window.speechSynthesis.speak(utter);
+    
   };
+
+  const toggleVoice  = () =>{
+    setVoiceEnabled((prev)=>{
+      if (prev) window.speechSynthesis.cancel();
+      return !prev;
+    });
+  };
+
 
   return (
     <div className="max-w-3xl mx-auto py-8 px-4 space-y-6">
-      <h1 className="text-3xl font-bold text-gray-800 flex items-center gap-2">
+      <div className="flex justify-between items-center">      
+        <h1 className="text-3xl font-bold text-gray-800 flex items-center gap-2">
         <BotMessageSquare className="text-teal-700" /> AI Study Assistant
       </h1>
+
+      <button onClick={toggleVoice} className={`p-2 rounded full border transition ${voiceEnabled?
+        "bg-teal-600 text-white hover:bg-teal-700"
+        :"bg-teal-600 text-white hover:bg-teal-700"
+      }`} title={voiceEnabled?"Disable Voice":"Enable Voice"}>
+        {voiceEnabled?<Volume2 size={20}/>:<VolumeX size={20}/>}
+
+
+      </button>
+</div>
+
 
       <div className="border rounded-lg p-4 bg-white min-h-[400px] space-y-3 overflow-y-auto">
         {messages.map((msg, i) => (
