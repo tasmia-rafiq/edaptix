@@ -104,3 +104,9 @@ This **chained orchestration** demonstrates **AI agent collaboration** — a key
 
 ## 🧪 Example Tech Stack
 
+- Frontend: Next.js + TailwindCSS
+- Backend: Next.js API Routes (Node.js runtime)
+- Database: MongoDB Atlas
+- AI Models: GPT-4.1 + Grok Feedback Agent (llama-3.1-8b-instant) + Tavily Search Agent
+- Speech: Web Speech API (Recognition + Synthesis)
+- Deployment: Vercel (Serverless)
