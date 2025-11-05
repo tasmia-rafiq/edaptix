@@ -34,7 +34,11 @@ const Header = async () => {
               {session?.role === "teacher" ? (
                 <Link href={"/dashboard/courses"}>My Courses</Link>
               ) : (
-                <Link href={"/courses"}>Courses</Link>
+                <>
+                  <Link href={"/courses"}>Courses</Link>
+                  <Link href={"/dashboard/tests"}>Assessments</Link>
+                  <Link href={"/dashboard/ai-tutor"}>AI Tutor</Link>
+                </>
               )}
 
               <Link

@@ -148,13 +148,15 @@ export default async function TeacherCoursesPage() {
                 className="bg-white rounded-2xl border border-slate-100 shadow-sm p-4 flex flex-col"
               >
                 <div className="flex items-start gap-4">
-                  <div className="w-28 h-16 rounded-lg bg-slate-100 overflow-hidden border border-slate-300">
+                  <div className="w-28 h-28 rounded-lg bg-slate-100 overflow-hidden border border-slate-300">
                     {c.coverImage ? (
-                      <img
-                        src={c.coverImage}
-                        alt={c.title}
-                        className="w-full h-full object-cover"
-                      />
+                      <Link href={`/dashboard/courses/${c._id}`}>
+                        <img
+                          src={c.coverImage}
+                          alt={c.title}
+                          className="w-full h-full object-cover"
+                        />
+                      </Link>
                     ) : (
                       <div className="w-full h-full flex items-center justify-center text-slate-400">
                         No cover
@@ -165,14 +167,16 @@ export default async function TeacherCoursesPage() {
                   <div className="flex-1 min-w-0">
                     <div className="flex items-start justify-between gap-3">
                       <div className="min-w-0">
-                        <h3 className="text-lg font-semibold text-slate-900 truncate">
-                          {c.title}
-                        </h3>
-                        {c.subtitle && (
-                          <div className="text-sm text-slate-600 mt-1 truncate">
-                            {c.subtitle}
-                          </div>
-                        )}
+                        <Link href={`/dashboard/courses/${c._id}`}>
+                          <h3 className="text-lg font-semibold text-slate-900 truncate">
+                            {c.title}
+                          </h3>
+                          {c.subtitle && (
+                            <div className="text-sm text-slate-600 mt-1 truncate">
+                              {c.subtitle}
+                            </div>
+                          )}
+                        </Link>
                         <div className="mt-2 flex items-center gap-2 text-xs text-slate-500">
                           <div>
                             {lessonCount} lesson{lessonCount !== 1 ? "s" : ""}
