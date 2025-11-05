@@ -1,9 +1,14 @@
 # 🎓 Edaptix — AI Wrapper-Powered Learning Ecosystem
 
+### 🎉 Edaptix Selected at Regional Level for AI Wrapper Competition by Ignite National Technology Fund - Check Out [Here](https://www.linkedin.com/posts/zehraarshad_ai-nic-datascience-activity-7390354754423635968-nqJP?utm_source=social_share_send&utm_medium=member_desktop_web&rcm=ACoAADf4ztEB6QB1gWUlBCQOvtDfJJJMnEgeOrg) ###
+
+----
+
 > **Empowering Teachers. Guiding Students. Enhancing Learning through Intelligent AI Wrappers.**
 
 ---
-
+> **[Demo Video Link](https://drive.google.com/file/d/1hWIs2mjFW3z2c7IDuK5h2CAn_A7wC3xE/view?usp=sharing)** 
+---
 ## 🧩 Overview
 
 **Edaptix** is an AI-powered educational platform built to **bridge the gap between teaching and adaptive learning** in Pakistan’s evolving academic landscape.  
